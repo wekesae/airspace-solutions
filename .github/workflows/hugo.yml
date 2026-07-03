@@ -1,73 +1,67 @@
-baseURL = "https://wekesae.github.io/airspace-solutions/"
-title = "Enterprise Systems & VoIP Infrastructure Engineering"
-theme = "airspace-hugo"
+name: Deploy Airspace Site to Pages
 
-# Core Language & Theme Engine Configuration Settings
-languageCode = "en-us"
-defaultContentLanguage = "en"
-enableRobotsTXT = true
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
 
-[outputs]
-  home = ["HTML", "RSS", "JSON"]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-# -------------------------------------------------------------------------
-# Navigation Header Menu Configuration
-# -------------------------------------------------------------------------
-[[menu.main]]
-  name = "Home"
-  url = "/"
-  weight = 1
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
-[[menu.main]]
-  name = "About"
-  url = "about/"
-  weight = 2
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.147.2
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
 
-[[menu.main]]
-  name = "Contact"
-  url = "contact/"
-  weight = 3
+      - name: Fetch Free Airspace Theme Assets
+        run: |
+          mkdir -p themes
+          git clone https://github.com/themefisher/airspace-hugo.git themes/airspace-hugo
 
-# -------------------------------------------------------------------------
-# Main Website Layout Text Parameters
-# -------------------------------------------------------------------------
-[params]
-  logo = "" # Leave blank to render text or point to an image asset path later
-  
-  # Main Hero Banner Configuration Block (Top Section seen in Screenshot 2026-07-03 163436.png)
-  [params.hero]
-    enable = true
-    title = "Enterprise Communications & Systems Infrastructure Solutions"
-    description = "Deploying and hardening highly resilient, secure open-source system solutions—from unified call center networks to robust point-of-sale environments."
-    btnText = "Explore Our Infrastructure Solutions"
-    btnLink = "#solutions-matrix"
+      - name: Initialize Layout Boilerplate
+        run: |
+          cp -r themes/airspace-hugo/exampleSite/* .
+          
+          TARGET_CONFIG=""
+          if [ -f hugo.toml ]; then TARGET_CONFIG="hugo.toml"; fi
+          if [ -f config.toml ]; then TARGET_CONFIG="config.toml"; fi
 
-  # Core About Introduction Section Block
-  [params.about]
-    enable = true
-    title = "System Architecture and Security Hardening"
-    description = "We design, optimize, and maintain critical infrastructure stacks tailored for modern business environments. Our technical focus bridges the gap between resilient open-source platforms, automated commercial databases, and hardened endpoint administration."
+          if [ ! -z "$TARGET_CONFIG" ]; then
+            sed -i 's|themesDir = "..\/\..\"|themesDir = "themes"|g' "$TARGET_CONFIG"
+            sed -i "s|baseURL = \".*\"|baseURL = \"https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/\"|g" "$TARGET_CONFIG"
+          fi
 
-  # Core Solutions / Service Grid Section Block
-  [params.service]
-    enable = true
-    title = "Our Core Technical Solutions"
-    subtitle = "Tailored systems deployment and systems administration frameworks designed for absolute operational uptime."
+      - name: Setup Hugo Extended Build Engine
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          extended: true
 
-    # Solution Grid Card 1: Unified Communications
-    [[params.service.item]]
-      icon = "tf-ion-ios-telephone-outline"
-      title = "Unified VoIP & Call Center Deployments"
-      description = "Full orchestration and optimization of open-source telephony engines including Asterisk, IssabelPBX, and VitalPBX. Specialized in robust multi-tier IVR setups, automatic call distribution (ACD) queues, NAT traversal tuning, and secure remote WebRTC web-phone infrastructure."
+      - name: Compile Corporate Static Package
+        run: hugo --gc --minify
 
-    # Solution Grid Card 2: Retail & CRM Operations
-    [[params.service.item]]
-      icon = "tf-ion-android-cart"
-      title = "POS Systems & Operational CRM Integration"
-      description = "End-to-end integration of open-source Point of Sale (POS) retail architectures with automated back-office databases. Seamlessly coupled with custom on-premise CRM platforms to manage unified order pipelines and event execution metadata tracking."
+      - name: Upload Build Artifact Folder
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
 
-    # Solution Grid Card 3: Server Infrastructure & Auditing
-    [[params.service.item]]
-      icon = "tf-ion-ios-locked-outline"
-      title = "Infrastructure Administration & Security Hardening"
-      description = "Proactive tracking and mitigation of security vectors via regular server CVE audits. Expertise in firewall hardening, secure remote server workspace administration via Visual Studio Code SSH tunnels, and automated snapshot recovery architectures."
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Publish Live to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
