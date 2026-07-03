@@ -5,20 +5,17 @@ languageCode = "en-us"
 defaultContentLanguage = "en"
 
 # -------------------------------------------------------------------------
-# Theme Engine Structural Design Variables (Fixes the SCSS Compiler Error)
+# Theme Design Parameter Variables (Fixes the SCSS Compiler Error)
 # -------------------------------------------------------------------------
 [params]
-  # Theme Fonts
   font_family = "Playfair+Display:serif|Roboto:sans-serif"
   font_primary = "Roboto, sans-serif"
   font_secondary = "Playfair Display, serif"
-
-  # Theme Assets and Styling Elements
   logo = ""
   custom_css = []
   custom_js = []
 
-  # Main Hero Banner Component
+  # Main Hero Banner Block Parameters
   [params.hero]
     enable = true
     title = "Enterprise Communications & Systems Infrastructure Solutions"
@@ -26,13 +23,13 @@ defaultContentLanguage = "en"
     btnText = "Explore Our Technical Solutions"
     btnLink = "#solutions-matrix"
 
-  # Core About Component
+  # Core About Section Parameters
   [params.about]
     enable = true
     title = "System Architecture and Security Hardening"
     description = "We design, optimize, and maintain critical infrastructure stacks tailored for modern business environments. Our technical focus bridges the gap between resilient open-source platforms, automated commercial databases, and hardened endpoint administration."
 
-  # Feature Rows Component
+  # Feature Rows Section Parameters
   [params.feature]
     enable = true
     title = "Why Partner With Us?"
@@ -43,7 +40,7 @@ defaultContentLanguage = "en"
       title = "Strict Open-Source Core Architectures"
       content = "Eliminate predatory software licensing vendor fees by deploying enterprise-grade open-source tools like Asterisk, Issabel, and hardened server daemons."
 
-  # Services Grid Component
+  # Services Grid Section Parameters
   [params.service]
     enable = true
     title = "Our Core Technical Solutions"
