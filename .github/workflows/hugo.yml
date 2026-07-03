@@ -28,11 +28,21 @@ jobs:
           mkdir -p themes
           git clone https://github.com/themefisher/airspace-hugo.git themes/airspace-hugo
 
-      - name: Initialize Layout Boilerplate Safely
+      - name: Build Site Structure Following Theme Documentation
         run: |
-          # Use -n (no-clobber) so existing repository files are NEVER overwritten
-          cp -n -r themes/airspace-hugo/exampleSite/* . || true
+          # 1. Back up your custom content directory to a temporary location
+          mkdir -p /tmp/custom-assets
+          if [ -d content ]; then cp -r content/* /tmp/custom-assets/; fi
           
+          # 2. Extract the complete, working example structure from the theme documentation
+          cp -r themes/airspace-hugo/exampleSite/* .
+          
+          # 3. Layer your custom content back on top, cleanly overwriting the placeholders
+          if [ -d /tmp/custom-assets ] && [ "$(ls -A /tmp/custom-assets)" ]; then
+            cp -r /tmp/custom-assets/* ./content/
+          fi
+
+          # 4. Correct base URLs inside the standard config file
           TARGET_CONFIG=""
           if [ -f hugo.toml ]; then TARGET_CONFIG="hugo.toml"; fi
           if [ -f config.toml ]; then TARGET_CONFIG="config.toml"; fi
