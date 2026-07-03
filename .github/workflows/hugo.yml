@@ -1,0 +1,65 @@
+name: Deploy Airspace Site to Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.147.2
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Fetch Free Airspace Theme Assets
+        run: |
+          mkdir -p themes
+          git clone https://github.com/themefisher/airspace-hugo.git themes/airspace-hugo
+
+      - name: Initialize Layout Boilerplate
+        run: |
+          # Copy everything from the theme's built-in example site folder
+          cp -r themes/airspace-hugo/exampleSite/* .
+          
+          # Fix directory tracking variables
+          sed -i 's|themesDir = "..\/\.."|themesDir = "themes"|g' config.toml
+
+          # Point the domain base directly to your custom page endpoint
+          sed -i "s|baseURL = \".*\"|baseURL = \"https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/\"|g" config.toml
+
+      - name: Setup Hugo Extended Build Engine
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          extended: true
+
+      - name: Compile Corporate Static Package
+        run: hugo --gc --minify
+
+      - name: Upload Build Artifact Folder
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Publish Live to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
