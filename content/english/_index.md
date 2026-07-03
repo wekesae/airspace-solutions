@@ -1,29 +1,30 @@
 ---
+title: "Enterprise Systems & VoIP Infrastructure Engineering"
+
 # -------------------------------------------------------------------------
-# Hero Banner Block (Top of Screenshot 2026-07-03 164030.png)
+# Hero Banner Component (Top Section)
 # -------------------------------------------------------------------------
 banner:
   enable: true
   title: "Enterprise Communications & Systems Infrastructure Solutions"
-  content: "Deploying and hardening highly resilient, secure open-source system solutions—from unified call center networks to robust point-of-sale environments."
+  description: "Deploying and hardening highly resilient, secure open-source system solutions—from unified call center networks to robust point-of-sale environments."
   btnText: "Explore Our Technical Solutions"
   btnLink: "#solutions-matrix"
 
 # -------------------------------------------------------------------------
-# About Section Block (Middle of Screenshot 2026-07-03 164030.png)
+# About Component (Middle Section)
 # -------------------------------------------------------------------------
 about:
   enable: true
   title: "System Architecture and Security Hardening"
-  content: "We design, optimize, and maintain critical infrastructure stacks tailored for modern business environments. Our technical focus bridges the gap between resilient open-source platforms, automated commercial databases, and hardened endpoint administration."
+  description: "We design, optimize, and maintain critical infrastructure stacks tailored for modern business environments. Our technical focus bridges the gap between resilient open-source platforms, automated commercial databases, and hardened endpoint administration."
 
 # -------------------------------------------------------------------------
-# Feature / Reason Section Block ("We Believe In Great Ideas")
+# Feature Rows Component ("We Believe In Great Ideas")
 # -------------------------------------------------------------------------
 feature:
   enable: true
   title: "Why Partner With Us?"
-  # This array populates the feature rows seen on the layout page
   feature_item:
     - title: "Uptime-First Engineering Philosophy"
       content: "All configurations are built using clean infrastructure-as-code foundations to guarantee that networks, SIP interfaces, and point-of-sale databases achieve seamless continuity."
@@ -32,7 +33,7 @@ feature:
       content: "Eliminate predatory software licensing vendor fees by deploying enterprise-grade open-source tools like Asterisk, Issabel, and hardened server daemons."
 
 # -------------------------------------------------------------------------
-# Core Services Section Block (Grid Configuration)
+# Services Component Grid (Bottom Section)
 # -------------------------------------------------------------------------
 service:
   enable: true
@@ -49,5 +50,5 @@ service:
 
     - icon: "tf-ion-ios-locked-outline"
       title: "Infrastructure Administration & Security Hardening"
-      description: "Proactive tracking and mitigation of security vectors via regular server CVE audits. Expertise in firewall hardening, secure remote server workspace administration via Visual Studio Code SSH tunnels, and automated snapshot recovery architectures."
+      content: "Proactive tracking and mitigation of security vectors via regular server CVE audits. Expertise in firewall hardening, secure remote server workspace administration via Visual Studio Code SSH tunnels, and automated snapshot recovery architectures."
 ---
