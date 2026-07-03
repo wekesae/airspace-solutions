@@ -33,11 +33,20 @@ jobs:
           # Copy everything from the theme's built-in example site folder
           cp -r themes/airspace-hugo/exampleSite/* .
           
-          # Fix directory tracking variables
-          sed -i 's|themesDir = "..\/\.."|themesDir = "themes"|g' config.toml
+          # Detect whether the theme uses hugo.toml or config.toml
+          TARGET_CONFIG=""
+          if [ -f hugo.toml ]; then TARGET_CONFIG="hugo.toml"; fi
+          if [ -f config.toml ]; then TARGET_CONFIG="config.toml"; fi
 
-          # Point the domain base directly to your custom page endpoint
-          sed -i "s|baseURL = \".*\"|baseURL = \"https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/\"|g" config.toml
+          if [ ! -z "$TARGET_CONFIG" ]; then
+            # Fix directory tracking variables dynamically inside the file found
+            sed -i 's|themesDir = "..\/\.."|themesDir = "themes"|g' "$TARGET_CONFIG"
+
+            # Point the domain base directly to your custom page endpoint
+            sed -i "s|baseURL = \".*\"|baseURL = \"https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/\"|g" "$TARGET_CONFIG"
+          else
+            echo "Error: No configuration file found!" && exit 1
+          fi
 
       - name: Setup Hugo Extended Build Engine
         uses: peaceiris/actions-hugo@v3
