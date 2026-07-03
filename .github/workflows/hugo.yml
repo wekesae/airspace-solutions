@@ -28,9 +28,10 @@ jobs:
           mkdir -p themes
           git clone https://github.com/themefisher/airspace-hugo.git themes/airspace-hugo
 
-      - name: Initialize Layout Boilerplate
+      - name: Initialize Layout Boilerplate Safely
         run: |
-          cp -r themes/airspace-hugo/exampleSite/* .
+          # Use -n (no-clobber) so existing repository files are NEVER overwritten
+          cp -n -r themes/airspace-hugo/exampleSite/* . || true
           
           TARGET_CONFIG=""
           if [ -f hugo.toml ]; then TARGET_CONFIG="hugo.toml"; fi
